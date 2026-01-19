@@ -10,7 +10,7 @@
   </head>
   <body>
     <div id="app">
-      <a-scene>
+      <a-scene day-night-cycle="cycleDuration: 60000">
         <!-- Caméra avec contrôles de mouvement limités -->
         <a-entity
           id="rig"
@@ -62,7 +62,7 @@
         <a-entity
           gltf-model="./models/Airplane.glb"
           scale="5 5 5"
-          wall-flight="height: 16; speed: 5; offset: 9"
+          wall-flight="height: 16; speed: 3.5; offset: 9"
         ></a-entity>
 
         <!-- Mur Est (droite) -->
