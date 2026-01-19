@@ -5,11 +5,22 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>cubeprince</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script type="module" src="/src/main.js"></script>
   </head>
   <body>
     <div id="app">
-      <!-- index.html -->
       <a-scene>
+        <!-- Caméra avec contrôles de mouvement limités -->
+        <a-entity
+          id="rig"
+          boundary="minX: -2; maxX: 2; minZ: -2; maxZ: 2"
+          wasd-controls="acceleration: 20"
+          position="0 0 0"
+        >
+          <a-entity camera look-controls position="0 1.6 0"></a-entity>
+        </a-entity>
+
         <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
         <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
         <a-cylinder
@@ -25,11 +36,39 @@
           height="4"
           color="#7BC8A4"
         ></a-plane>
+
+        <!-- Murs invisibles pour délimiter la zone -->
+        <a-box
+          position="5 1 0"
+          width="0.1"
+          height="2"
+          depth="10"
+          visible="false"
+        ></a-box>
+        <a-box
+          position="-5 1 0"
+          width="0.1"
+          height="2"
+          depth="10"
+          visible="false"
+        ></a-box>
+        <a-box
+          position="0 1 5"
+          width="10"
+          height="2"
+          depth="0.1"
+          visible="false"
+        ></a-box>
+        <a-box
+          position="0 1 -5"
+          width="10"
+          height="2"
+          depth="0.1"
+          visible="false"
+        ></a-box>
+
         <a-sky color="#ECECEC"></a-sky>
       </a-scene>
-
-      <!-- index -->
     </div>
-    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
