@@ -14,60 +14,75 @@
         <!-- Caméra avec contrôles de mouvement limités -->
         <a-entity
           id="rig"
-          boundary="minX: -2; maxX: 2; minZ: -2; maxZ: 2"
+          boundary="minX: -2; maxX: 2; minZ: -14; maxZ: -10"
           wasd-controls="acceleration: 20"
-          position="0 0 0"
+          look-controls="pointerLockEnabled: true"
+          position="0 0 -12"
         >
-          <a-entity camera look-controls position="0 1.6 0"></a-entity>
+          <a-entity camera position="0 1.6 0"></a-entity>
         </a-entity>
 
-        <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-        <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-        <a-cylinder
-          position="1 0.75 -3"
-          radius="0.5"
-          height="1.5"
-          color="#FFC65D"
-        ></a-cylinder>
+        <!-- Sol -->
         <a-plane
-          position="0 0 -4"
+          position="0 0 0"
           rotation="-90 0 0"
-          width="4"
-          height="4"
+          width="32"
+          height="32"
           color="#7BC8A4"
         ></a-plane>
 
-        <!-- Murs invisibles pour délimiter la zone -->
-        <a-box
-          position="5 1 0"
-          width="0.1"
-          height="2"
-          depth="10"
-          visible="false"
-        ></a-box>
-        <a-box
-          position="-5 1 0"
-          width="0.1"
-          height="2"
-          depth="10"
-          visible="false"
-        ></a-box>
-        <a-box
-          position="0 1 5"
-          width="10"
-          height="2"
-          depth="0.1"
-          visible="false"
-        ></a-box>
-        <a-box
-          position="0 1 -5"
-          width="10"
-          height="2"
-          depth="0.1"
-          visible="false"
-        ></a-box>
+        <!-- Plafond -->
+        <a-plane
+          position="0 32 0"
+          rotation="90 0 0"
+          width="32"
+          height="32"
+          color="#D4D4D4"
+        ></a-plane>
 
-        <a-sky color="#ECECEC"></a-sky>
+        <!-- Mur Nord (devant initial) -->
+        <a-plane
+          position="0 16 -16"
+          rotation="0 0 0"
+          width="32"
+          height="32"
+          color="#4CC3D9"
+        ></a-plane>
+
+        <!-- Mur Sud (derrière) -->
+        <a-plane
+          position="0 16 16"
+          rotation="0 180 0"
+          width="32"
+          height="32"
+          color="#EF2D5E"
+        ></a-plane>
+
+        <!-- Modèle 3D : Avion -->
+        <a-entity
+          gltf-model="./models/Airplane.glb"
+          position="0 2.5 8"
+          scale="5 5 5"
+          rotation="0 75 0"
+        ></a-entity>
+
+        <!-- Mur Est (droite) -->
+        <a-plane
+          position="16 16 0"
+          rotation="0 -90 0"
+          width="32"
+          height="32"
+          color="#FFC65D"
+        ></a-plane>
+
+        <!-- Mur Ouest (gauche) -->
+        <a-plane
+          position="-16 16 0"
+          rotation="0 90 0"
+          width="32"
+          height="32"
+          color="#9B59B6"
+        ></a-plane>
       </a-scene>
     </div>
   </body>
