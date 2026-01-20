@@ -108,6 +108,7 @@ AFRAME.registerComponent("day-night-cycle", {
 
   init: function () {
     this.elapsedTime = 0;
+    this.isNight = false;
 
     // Créer les lumières
     const ambientLight = document.createElement("a-entity");
@@ -131,6 +132,23 @@ AFRAME.registerComponent("day-night-cycle", {
 
     this.ambientLight = ambientLight;
     this.directionalLight = directionalLight;
+
+    // Créer l'élément audio pour la nuit
+    const nightSound = document.createElement("a-entity");
+    nightSound.setAttribute(
+      "sound",
+      "src: ./Chouette.mp3; loop: true; autoplay: false; volume: 0.5",
+    );
+    nightSound.setAttribute("id", "night-sound");
+    this.el.sceneEl.appendChild(nightSound);
+    this.nightSound = nightSound;
+    this.soundReady = false;
+
+    // Attendre que le son soit chargé
+    nightSound.addEventListener("sound-loaded", () => {
+      this.soundReady = true;
+      console.log("Son de chouette chargé");
+    });
   },
 
   tick: function (time, delta) {
@@ -167,5 +185,30 @@ AFRAME.registerComponent("day-night-cycle", {
       "intensity",
       directionalIntensity,
     );
+
+    // Gérer le son de nuit (quand lightIntensity < 0.5, c'est la nuit)
+    if (this.soundReady) {
+      const isNightNow = lightIntensity < 0.5;
+
+      if (isNightNow && !this.isNight) {
+        // Passage au cycle de nuit
+        try {
+          this.nightSound.components.sound.playSound();
+          console.log("Son de nuit démarré");
+        } catch (e) {
+          console.error("Erreur lecture son:", e);
+        }
+        this.isNight = true;
+      } else if (!isNightNow && this.isNight) {
+        // Passage au cycle de jour
+        try {
+          this.nightSound.components.sound.stopSound();
+          console.log("Son de nuit arrêté");
+        } catch (e) {
+          console.error("Erreur arrêt son:", e);
+        }
+        this.isNight = false;
+      }
+    }
   },
 });
