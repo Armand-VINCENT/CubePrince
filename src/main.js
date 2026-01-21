@@ -123,6 +123,9 @@ AFRAME.registerComponent("day-night-cycle", {
     this.elapsedTime = 0;
     this.isNight = false;
 
+    // Récupérer le ciel
+    this.sky = this.el.sceneEl.querySelector("a-sky");
+
     // Créer les lumières
     const ambientLight = document.createElement("a-entity");
     ambientLight.setAttribute("light", {
@@ -198,6 +201,23 @@ AFRAME.registerComponent("day-night-cycle", {
       "intensity",
       directionalIntensity,
     );
+
+    // Mettre à jour la couleur du ciel
+    if (this.sky) {
+      // Couleur du ciel : jour = bleu clair, nuit = bleu très foncé/noir
+      const skydayColor = { r: 110, g: 186, b: 167 }; // #6EBAA7
+      const skyNightColor = { r: 10, g: 15, b: 35 }; // Presque noir avec teinte bleue
+
+      const skyR =
+        skyNightColor.r + (skydayColor.r - skyNightColor.r) * lightIntensity;
+      const skyG =
+        skyNightColor.g + (skydayColor.g - skyNightColor.g) * lightIntensity;
+      const skyB =
+        skyNightColor.b + (skydayColor.b - skyNightColor.b) * lightIntensity;
+
+      const skyColor = `rgb(${Math.floor(skyR)}, ${Math.floor(skyG)}, ${Math.floor(skyB)})`;
+      this.sky.setAttribute("color", skyColor);
+    }
 
     // Gérer le son de nuit (quand lightIntensity < 0.5, c'est la nuit)
     if (this.soundReady) {
