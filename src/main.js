@@ -1,10 +1,29 @@
 import "./style.css";
 
+// Composant pour vérifier que le curseur fonctionne
+AFRAME.registerComponent("cursor-debug", {
+  init: function () {
+    console.log("✅ Curseur activé et prêt");
+
+    // Log quand le curseur survole un objet
+    this.el.addEventListener("raycaster-intersection", (evt) => {
+      console.log("👁️ Curseur pointe sur:", evt.detail.els[0]);
+    });
+
+    // Log quand le curseur quitte un objet
+    this.el.addEventListener("raycaster-intersection-cleared", () => {
+      console.log("👁️ Curseur ne pointe plus sur d'objet");
+    });
+  },
+});
+
 // Composant pour gérer le clic sur la chaise et déclencher le coucher de soleil
 AFRAME.registerComponent("sunset-trigger", {
   init: function () {
+    console.log("🪑 Chaise initialisée et prête pour l'interaction");
+
     this.el.addEventListener("click", () => {
-      console.log("🪑 Clic sur la chaise détecté");
+      console.log("✨ INTERACTION DÉCLENCHÉE - Clic sur la chaise détecté!");
 
       // Trouver le composant day-night-cycle et démarrer l'animation
       const scene = this.el.sceneEl;
@@ -15,9 +34,10 @@ AFRAME.registerComponent("sunset-trigger", {
         !dayNightCycle.sunsetAnimationActive &&
         !dayNightCycle.cycleActive
       ) {
+        console.log("🌅 Lancement de l'animation du coucher de soleil...");
         dayNightCycle.startSunsetAnimation();
       } else {
-        console.log("Animation déjà en cours ou cycle déjà actif");
+        console.log("⚠️ Animation déjà en cours ou cycle déjà actif");
       }
     });
   },
@@ -315,6 +335,27 @@ AFRAME.registerComponent("day-night-cycle", {
     this.sunsetAnimationActive = true;
     this.sunsetProgress = 0;
     this.sunsetStartTime = Date.now();
+
+    // Animer le soleil vers l'horizon ouest pendant le coucher
+    const radius = 100;
+    const playerPos = this.rig
+      ? this.rig.object3D.position
+      : { x: 0, y: 0, z: 0 };
+
+    this.sunsetStartPos = {
+      x: parseFloat(this.sun.getAttribute("position").x),
+      y: parseFloat(this.sun.getAttribute("position").y),
+      z: parseFloat(this.sun.getAttribute("position").z),
+    };
+
+    // Position du soleil à l'horizon ouest (coucher de soleil)
+    // cycle = 0.75 correspond au soleil à l'horizon ouest (sin(0.75 * 2π) = 0)
+    const sunsetAngle = 0.75 * Math.PI * 2; // Angle pour l'horizon ouest (sens inverse)
+    this.sunsetEndPos = {
+      x: playerPos.x,
+      y: Math.sin(sunsetAngle) * radius, // ~0 (horizon)
+      z: playerPos.z + Math.cos(sunsetAngle) * radius,
+    };
   },
 
   tick: function (time, delta) {
@@ -343,12 +384,29 @@ AFRAME.registerComponent("day-night-cycle", {
       const skyColor = `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
       this.sky.setAttribute("color", skyColor);
 
+      // Animer le soleil vers l'horizon
+      if (this.sun && this.sunsetStartPos && this.sunsetEndPos) {
+        const sunX =
+          this.sunsetStartPos.x +
+          (this.sunsetEndPos.x - this.sunsetStartPos.x) * this.sunsetProgress;
+        const sunY =
+          this.sunsetStartPos.y +
+          (this.sunsetEndPos.y - this.sunsetStartPos.y) * this.sunsetProgress;
+        const sunZ =
+          this.sunsetStartPos.z +
+          (this.sunsetEndPos.z - this.sunsetStartPos.z) * this.sunsetProgress;
+        this.sun.setAttribute("position", `${sunX} ${sunY} ${sunZ}`);
+      }
+
       // Fin de l'animation du coucher de soleil
       if (this.sunsetProgress >= 1) {
         this.sunsetAnimationActive = false;
         this.cycleActive = true; // Démarrer le cycle jour/nuit
-        this.elapsedTime = 0; // Réinitialiser pour commencer le cycle de nuit
-        console.log("🌙 Cycle jour/nuit activé");
+        // Commencer le cycle à 0.75 (soleil à l'horizon ouest, commence à descendre)
+        this.elapsedTime = 0.75 * this.data.cycleDuration;
+        console.log(
+          "🌙 Cycle jour/nuit activé - continuation depuis l'horizon ouest",
+        );
       }
 
       return; // Ne pas exécuter le reste si on est en animation de coucher de soleil
