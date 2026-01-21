@@ -123,10 +123,38 @@ AFRAME.registerComponent("day-night-cycle", {
     this.elapsedTime = 0;
     this.isNight = false;
     this.audioStarted = false;
-    this.initialPosition = null;
 
     // Récupérer le ciel
     this.sky = this.el.sceneEl.querySelector("a-sky");
+
+    // Gérer le bouton de démarrage
+    const startOverlay = document.querySelector("#start-overlay");
+    if (startOverlay) {
+      startOverlay.addEventListener("click", () => {
+        console.log("🎵 Tentative de démarrage du son de vent...");
+
+        // Démarrer le son de vent
+        const windSound = document.querySelector("#wind-sound");
+        if (windSound && windSound.components.sound) {
+          try {
+            windSound.components.sound.playSound();
+            console.log("✅ Son de vent démarré avec succès !");
+          } catch (error) {
+            console.error("❌ Erreur lors du démarrage du son de vent:", error);
+          }
+        } else {
+          console.warn(
+            "⚠️ Élément son de vent non trouvé ou composant sound non initialisé",
+          );
+        }
+
+        this.audioStarted = true;
+
+        // Masquer l'overlay
+        startOverlay.style.display = "none";
+        console.log("🎬 Overlay masqué - Expérience démarrée");
+      });
+    }
 
     // Récupérer le rig pour détecter le mouvement
     this.rig = document.querySelector("#rig");
@@ -174,34 +202,6 @@ AFRAME.registerComponent("day-night-cycle", {
 
   tick: function (time, delta) {
     this.elapsedTime += delta;
-
-    // Détecter le mouvement du joueur pour démarrer l'audio
-    if (!this.audioStarted && this.rig) {
-      const currentPos = this.rig.object3D.position;
-
-      if (!this.initialPosition) {
-        this.initialPosition = {
-          x: currentPos.x,
-          y: currentPos.y,
-          z: currentPos.z,
-        };
-      } else {
-        // Calculer la distance parcourue
-        const dx = currentPos.x - this.initialPosition.x;
-        const dz = currentPos.z - this.initialPosition.z;
-        const distance = Math.sqrt(dx * dx + dz * dz);
-
-        // Si le joueur a bougé de plus de 0.1 unité, démarrer l'audio
-        if (distance > 0.1) {
-          const windSound = document.querySelector("#wind-sound");
-          if (windSound && windSound.components.sound) {
-            windSound.components.sound.playSound();
-            console.log("Son de vent démarré au premier mouvement");
-          }
-          this.audioStarted = true;
-        }
-      }
-    }
 
     // Calculer le cycle (0 = jour, 0.5 = nuit, 1 = jour)
     const cycle =
