@@ -1,5 +1,28 @@
 import "./style.css";
 
+// Composant pour gérer le clic sur la chaise et déclencher le coucher de soleil
+AFRAME.registerComponent("sunset-trigger", {
+  init: function () {
+    this.el.addEventListener("click", () => {
+      console.log("🪑 Clic sur la chaise détecté");
+
+      // Trouver le composant day-night-cycle et démarrer l'animation
+      const scene = this.el.sceneEl;
+      const dayNightCycle = scene.components["day-night-cycle"];
+
+      if (
+        dayNightCycle &&
+        !dayNightCycle.sunsetAnimationActive &&
+        !dayNightCycle.cycleActive
+      ) {
+        dayNightCycle.startSunsetAnimation();
+      } else {
+        console.log("Animation déjà en cours ou cycle déjà actif");
+      }
+    });
+  },
+});
+
 // Composant pour gérer les déplacements VR avec les joysticks
 AFRAME.registerComponent("thumbstick-logging", {
   init: function () {
@@ -141,12 +164,16 @@ AFRAME.registerComponent("wall-flight", {
 AFRAME.registerComponent("day-night-cycle", {
   schema: {
     cycleDuration: { type: "number", default: 30000 }, // Durée en millisecondes
+    autoStart: { type: "boolean", default: false }, // Ne démarre pas automatiquement
   },
 
   init: function () {
     this.elapsedTime = 0;
     this.isNight = false;
     this.audioStarted = false;
+    this.cycleActive = this.data.autoStart; // Contrôle du cycle
+    this.sunsetAnimationActive = false; // Pour l'animation du coucher de soleil
+    this.sunsetProgress = 0; // Progression de l'animation du coucher (0 à 1)
 
     // Récupérer le ciel
     this.sky = this.el.sceneEl.querySelector("a-sky");
@@ -248,6 +275,8 @@ AFRAME.registerComponent("day-night-cycle", {
     sun.setAttribute("radius", "8");
     sun.setAttribute("material", "shader: flat; color: #ffff00");
     sun.setAttribute("id", "sun");
+    sun.setAttribute("position", "0 50 -50"); // Position initiale visible dans le ciel
+    sun.setAttribute("opacity", "1"); // Visible au départ
     this.el.sceneEl.appendChild(sun);
     this.sun = sun;
 
@@ -256,6 +285,8 @@ AFRAME.registerComponent("day-night-cycle", {
     moon.setAttribute("radius", "6");
     moon.setAttribute("material", "shader: flat; color: #cccccc");
     moon.setAttribute("id", "moon");
+    moon.setAttribute("position", "0 -50 50"); // Position initiale sous l'horizon
+    moon.setAttribute("opacity", "0"); // Invisible au départ
     this.el.sceneEl.appendChild(moon);
     this.moon = moon;
 
@@ -279,7 +310,53 @@ AFRAME.registerComponent("day-night-cycle", {
     });
   },
 
+  startSunsetAnimation: function () {
+    console.log("🌅 Démarrage de l'animation du coucher de soleil");
+    this.sunsetAnimationActive = true;
+    this.sunsetProgress = 0;
+    this.sunsetStartTime = Date.now();
+  },
+
   tick: function (time, delta) {
+    // Gestion de l'animation du coucher de soleil (8 secondes)
+    if (this.sunsetAnimationActive) {
+      const sunsetDuration = 8000; // 8 secondes
+      this.sunsetProgress = Math.min(
+        1,
+        (Date.now() - this.sunsetStartTime) / sunsetDuration,
+      );
+
+      // Interpolation de couleur du ciel : bleu (#90D9DE) vers orange (#FF4500)
+      const blueColor = { r: 0x90, g: 0xd9, b: 0xde };
+      const orangeColor = { r: 0xff, g: 0x45, b: 0x00 };
+
+      const r = Math.floor(
+        blueColor.r + (orangeColor.r - blueColor.r) * this.sunsetProgress,
+      );
+      const g = Math.floor(
+        blueColor.g + (orangeColor.g - blueColor.g) * this.sunsetProgress,
+      );
+      const b = Math.floor(
+        blueColor.b + (orangeColor.b - blueColor.b) * this.sunsetProgress,
+      );
+
+      const skyColor = `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+      this.sky.setAttribute("color", skyColor);
+
+      // Fin de l'animation du coucher de soleil
+      if (this.sunsetProgress >= 1) {
+        this.sunsetAnimationActive = false;
+        this.cycleActive = true; // Démarrer le cycle jour/nuit
+        this.elapsedTime = 0; // Réinitialiser pour commencer le cycle de nuit
+        console.log("🌙 Cycle jour/nuit activé");
+      }
+
+      return; // Ne pas exécuter le reste si on est en animation de coucher de soleil
+    }
+
+    // Le cycle jour/nuit ne s'exécute que si cycleActive est true
+    if (!this.cycleActive) return;
+
     this.elapsedTime += delta;
 
     // Calculer le cycle (0 = jour, 0.5 = nuit, 1 = jour)

@@ -10,7 +10,7 @@
   </head>
   <body>
     <div id="app">
-      <a-scene day-night-cycle="cycleDuration: 60000">
+      <a-scene day-night-cycle="cycleDuration: 30000; autoStart: false">
         <!-- Caméra avec contrôles de mouvement limités -->
         <a-entity
           id="rig"
@@ -38,7 +38,21 @@
           ></a-entity>
         </a-entity>
 
-        <a-sky color="#90D9DE"></a-sky>
+        <!-- Caméra avec curseur -->
+        <a-entity camera look-controls wasd-controls position="0 1.6 0">
+          <a-entity
+            cursor="fuse: true; fuseTimeout: 500"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+            material="color: white; shader: flat"
+            animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.1 0.1 0.1; to: 1 1 1"
+            animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 500; from: 1 1 1; to: 0.1 0.1 0.1"
+            animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 500; to: 1 1 1"
+          >
+          </a-entity>
+        </a-entity>
+
+        <a-sky color="#90D9DE" id="sky"></a-sky>
 
         <!-- Son de vent ambiant -->
         <a-entity
@@ -86,6 +100,16 @@
             position="0 -0.451 0"
           ></a-light>
         </a-entity>
+
+        <!-- Chaise pour déclencher le coucher de soleil -->
+        <a-entity
+          gltf-model="./models/Chair.glb"
+          position="1.271 1 0.059"
+          rotation="0 180 0"
+          scale="1 1 1"
+          sunset-trigger
+          class="clickable"
+        ></a-entity>
 
         <!-- Rose au centre -->
         <a-entity
