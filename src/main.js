@@ -18,14 +18,6 @@ AFRAME.registerComponent("vr-body", {
   init: function () {
     const camera = this.el.sceneEl.camera.el;
 
-    // Créer le torse
-    const torso = document.createElement("a-cylinder");
-    torso.setAttribute("radius", "0.15");
-    torso.setAttribute("height", "0.6");
-    torso.setAttribute("color", "#5588ff");
-    torso.setAttribute("position", "0 -0.5 -0.1");
-    camera.appendChild(torso);
-
     // Créer les jambes
     const leftLeg = document.createElement("a-cylinder");
     leftLeg.setAttribute("radius", "0.08");
