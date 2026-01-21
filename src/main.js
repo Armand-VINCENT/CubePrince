@@ -214,6 +214,61 @@ AFRAME.registerComponent("day-night-cycle", {
     this.ambientLight = ambientLight;
     this.directionalLight = directionalLight;
 
+    // Créer les étoiles
+    this.stars = [];
+    const starsContainer = document.createElement("a-entity");
+    starsContainer.setAttribute("id", "stars-container");
+    this.el.sceneEl.appendChild(starsContainer);
+
+    // Générer 200 étoiles aléatoires
+    for (let i = 0; i < 200; i++) {
+      const star = document.createElement("a-sphere");
+
+      // Position aléatoire dans une sphère autour du joueur
+      const theta = Math.random() * Math.PI * 2; // Angle horizontal
+      const phi = (Math.random() * Math.PI) / 2; // Angle vertical (seulement au-dessus)
+      const radius = 80 + Math.random() * 40; // Distance entre 80 et 120
+
+      const x = radius * Math.sin(phi) * Math.cos(theta);
+      const y = radius * Math.cos(phi) + 20; // Au-dessus de l'horizon
+      const z = radius * Math.sin(phi) * Math.sin(theta);
+
+      star.setAttribute("position", `${x} ${y} ${z}`);
+      star.setAttribute("radius", 0.3 + Math.random() * 0.4);
+      star.setAttribute("material", "shader: flat; color: #ffffff");
+      star.setAttribute("opacity", 0); // Invisible au début
+
+      // Ajouter des propriétés pour le scintillement
+      star.userData = {
+        baseOpacity: 0.7 + Math.random() * 0.3,
+        twinkleSpeed: 0.001 + Math.random() * 0.002,
+        twinklePhase: Math.random() * Math.PI * 2,
+      };
+
+      starsContainer.appendChild(star);
+      this.stars.push(star);
+    }
+
+    console.log("✨ 200 étoiles créées");
+
+    // Créer le soleil
+    const sun = document.createElement("a-sphere");
+    sun.setAttribute("radius", "8");
+    sun.setAttribute("material", "shader: flat; color: #ffff00");
+    sun.setAttribute("id", "sun");
+    this.el.sceneEl.appendChild(sun);
+    this.sun = sun;
+
+    // Créer la lune
+    const moon = document.createElement("a-sphere");
+    moon.setAttribute("radius", "6");
+    moon.setAttribute("material", "shader: flat; color: #cccccc");
+    moon.setAttribute("id", "moon");
+    this.el.sceneEl.appendChild(moon);
+    this.moon = moon;
+
+    console.log("☀️ Soleil et 🌙 Lune créés");
+
     // Créer l'élément audio pour la nuit
     const nightSound = document.createElement("a-entity");
     nightSound.setAttribute(
@@ -282,6 +337,74 @@ AFRAME.registerComponent("day-night-cycle", {
 
       const skyColor = `rgb(${Math.floor(skyR)}, ${Math.floor(skyG)}, ${Math.floor(skyB)})`;
       this.sky.setAttribute("color", skyColor);
+    }
+
+    // Animer le soleil et la lune
+    if (this.sun && this.moon) {
+      // Utiliser cycle pour une rotation continue (0 à 1 = 0° à 360°)
+      // cycle = 0 -> aube (soleil à l'horizon Est)
+      // cycle = 0.25 -> midi (soleil au zénith, lightIntensity = 1)
+      // cycle = 0.5 -> crépuscule (soleil à l'horizon Ouest)
+      // cycle = 0.75 -> minuit (soleil en bas, lune au zénith, lightIntensity = 0)
+
+      const radius = 100; // Distance du centre
+      const playerPos = this.rig
+        ? this.rig.object3D.position
+        : { x: 0, y: 0, z: 0 };
+
+      // Calculer l'angle basé sur cycle pour une rotation continue
+      // cycle * 2π donne une rotation complète
+      const sunAngle = cycle * Math.PI * 2;
+
+      const sunX = playerPos.x;
+      const sunY = Math.sin(sunAngle) * radius;
+      const sunZ = playerPos.z + Math.cos(sunAngle) * radius;
+
+      this.sun.setAttribute("position", `${sunX} ${sunY} ${sunZ}`);
+
+      // Position de la lune (opposée au soleil, décalage de π)
+      const moonAngle = sunAngle + Math.PI;
+      const moonX = playerPos.x;
+      const moonY = Math.sin(moonAngle) * radius;
+      const moonZ = playerPos.z + Math.cos(moonAngle) * radius;
+
+      this.moon.setAttribute("position", `${moonX} ${moonY} ${moonZ}`);
+
+      // Opacité du soleil et de la lune (visible uniquement au-dessus de l'horizon)
+      const sunOpacity = sunY > 0 ? 1 : 0;
+      const moonOpacity = moonY > 0 ? 1 : 0;
+
+      this.sun.setAttribute("opacity", sunOpacity);
+      this.moon.setAttribute("opacity", moonOpacity);
+    }
+
+    // Gérer l'apparition et le scintillement des étoiles
+    if (this.stars && this.stars.length > 0) {
+      // Calculer l'opacité cible selon le cycle jour/nuit
+      // Les étoiles sont visibles la nuit (lightIntensity < 0.5)
+      const targetOpacity = lightIntensity < 0.5 ? 1 : 0;
+
+      this.stars.forEach((star) => {
+        const userData = star.userData;
+
+        // Transition douce de l'opacité
+        let currentOpacity = parseFloat(star.getAttribute("opacity") || 0);
+        const opacityDelta = (targetOpacity - currentOpacity) * 0.01;
+        currentOpacity += opacityDelta;
+
+        // Si les étoiles sont visibles, ajouter le scintillement
+        if (currentOpacity > 0.1) {
+          userData.twinklePhase += userData.twinkleSpeed * delta;
+          const twinkle = Math.sin(userData.twinklePhase) * 0.3;
+          const finalOpacity = Math.max(
+            0,
+            Math.min(1, currentOpacity * userData.baseOpacity + twinkle),
+          );
+          star.setAttribute("opacity", finalOpacity);
+        } else {
+          star.setAttribute("opacity", currentOpacity);
+        }
+      });
     }
 
     // Gérer le son de nuit (quand lightIntensity < 0.5, c'est la nuit)
