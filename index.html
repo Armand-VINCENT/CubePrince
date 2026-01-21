@@ -22,16 +22,38 @@
           <a-entity camera position="0 1.6 0"></a-entity>
 
           <!-- Mains VR -->
-          <a-entity hand-controls="hand: left"></a-entity>
-          <a-entity hand-controls="hand: right"></a-entity>
+          <a-entity
+            hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"
+            laser-controls
+          ></a-entity>
+          <a-entity
+            hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc"
+            laser-controls
+          ></a-entity>
         </a-entity>
 
         <!-- Sol -->
         <a-entity
-          gltf-model="./models/FlowerField.glb"
+          gltf-model="./models/Field.glb"
           position="0 0 0"
           rotation="0 0 0"
           scale="0.75 0.75 0.75"
+        ></a-entity>
+
+        <!-- Renard -->
+        <a-entity
+          gltf-model="./models/LittleFox.glb"
+          position="2 1.32902 -12"
+          rotation="0 -90 0"
+          scale=""
+        ></a-entity>
+
+        <!-- Arbre -->
+        <a-entity
+          gltf-model="./models/BigTree.glb"
+          position="-11.81576 5.81532 -8"
+          rotation=""
+          scale="4 4 4"
         ></a-entity>
 
         <!-- Plafond -->
