@@ -1,5 +1,18 @@
 import "./style.css";
 
+// Composant pour gérer les déplacements VR avec les joysticks
+AFRAME.registerComponent("thumbstick-logging", {
+  init: function () {
+    this.el.addEventListener("thumbstickmoved", this.logThumbstick);
+  },
+  logThumbstick: function (evt) {
+    if (evt.detail.y > 0.95) console.log("UP", evt.detail.y);
+    if (evt.detail.y < -0.95) console.log("DOWN", evt.detail.y);
+    if (evt.detail.x < -0.95) console.log("LEFT", evt.detail.x);
+    if (evt.detail.x > 0.95) console.log("RIGHT", evt.detail.x);
+  },
+});
+
 AFRAME.registerComponent("boundary", {
   schema: {
     minX: { type: "number", default: -5 },

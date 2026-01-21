@@ -15,20 +15,25 @@
         <a-entity
           id="rig"
           boundary="minX: -2; maxX: 2; minZ: -14; maxZ: -10"
-          wasd-controls="acceleration: 20"
-          look-controls="pointerLockEnabled: true"
-          position="0 0 -12"
+          movement-controls="speed: 0.2; fly: false; controls: gamepad"
+          position="0 1.6 -12"
         >
-          <a-entity camera position="0 1.6 0"></a-entity>
+          <a-entity
+            camera
+            position="0 0 0"
+            look-controls="pointerLockEnabled: false"
+          ></a-entity>
 
           <!-- Mains VR -->
           <a-entity
             hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"
             laser-controls
+            thumbstick-logging
           ></a-entity>
           <a-entity
             hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc"
             laser-controls
+            thumbstick-logging
           ></a-entity>
         </a-entity>
 
