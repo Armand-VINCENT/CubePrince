@@ -295,7 +295,7 @@ AFRAME.registerComponent("day-night-cycle", {
     sun.setAttribute("radius", "8");
     sun.setAttribute("material", "shader: flat; color: #ffff00");
     sun.setAttribute("id", "sun");
-    sun.setAttribute("position", "0 50 -50"); // Position initiale visible dans le ciel
+    sun.setAttribute("position", "0 80 -30"); // Position initiale plus haute dans le ciel
     sun.setAttribute("opacity", "1"); // Visible au départ
     this.el.sceneEl.appendChild(sun);
     this.sun = sun;
@@ -348,20 +348,23 @@ AFRAME.registerComponent("day-night-cycle", {
       z: parseFloat(this.sun.getAttribute("position").z),
     };
 
-    // Position du soleil à l'horizon ouest (coucher de soleil)
-    // cycle = 0.75 correspond au soleil à l'horizon ouest (sin(0.75 * 2π) = 0)
-    const sunsetAngle = 0.75 * Math.PI * 2; // Angle pour l'horizon ouest (sens inverse)
+    // Position du soleil à l'horizon est (coucher de soleil)
+    // Ajuster l'angle pour que le soleil soit juste à l'horizon (y proche de 0)
+    // Un angle de 0.5 * PI donne sin = 1 (zénith), 0 donne sin = 0 (horizon)
+    // Pour l'horizon est avec y = 0, on utilise un angle où sin(angle) ≈ 0
+    const sunsetAngle = 1.5 * Math.PI; // sin(1.5π) = -1, mais on ajuste pour horizon
+    // Calculer pour avoir y = 0 (horizon)
     this.sunsetEndPos = {
       x: playerPos.x,
-      y: Math.sin(sunsetAngle) * radius, // ~0 (horizon)
-      z: playerPos.z + Math.cos(sunsetAngle) * radius,
+      y: 0, // Exactement à l'horizon
+      z: playerPos.z - radius, // À l'est (inversé)
     };
   },
 
   tick: function (time, delta) {
     // Gestion de l'animation du coucher de soleil (8 secondes)
     if (this.sunsetAnimationActive) {
-      const sunsetDuration = 8000; // 8 secondes
+      const sunsetDuration = 20000; // 20 secondes pour un coucher plus lent
       this.sunsetProgress = Math.min(
         1,
         (Date.now() - this.sunsetStartTime) / sunsetDuration,
@@ -396,6 +399,33 @@ AFRAME.registerComponent("day-night-cycle", {
           this.sunsetStartPos.z +
           (this.sunsetEndPos.z - this.sunsetStartPos.z) * this.sunsetProgress;
         this.sun.setAttribute("position", `${sunX} ${sunY} ${sunZ}`);
+      }
+
+      // Faire apparaître la lune progressivement depuis le bas
+      if (this.moon && this.sunsetProgress > 0.3) {
+        const radius = 100;
+        const playerPos = this.rig
+          ? this.rig.object3D.position
+          : { x: 0, y: 0, z: 0 };
+
+        // La lune commence à apparaître à l'horizon est quand le soleil est à mi-chemin
+        // moonProgress va de 0 à 1 pendant que sunsetProgress va de 0.3 à 1
+        const moonProgress = (this.sunsetProgress - 0.3) / 0.7;
+
+        // Angle de la lune : commence à l'horizon est (angle = π, sin(π) = 0)
+        // et monte progressivement
+        const moonStartAngle = Math.PI; // Horizon est (y = 0)
+        const moonEndAngle = Math.PI + Math.PI * 0.5 * moonProgress; // Monte progressivement
+
+        const moonX = playerPos.x;
+        const moonY = Math.sin(moonEndAngle) * radius;
+        const moonZ = playerPos.z + Math.cos(moonEndAngle) * radius;
+
+        this.moon.setAttribute("position", `${moonX} ${moonY} ${moonZ}`);
+
+        // Opacité de la lune : visible dès qu'elle atteint l'horizon (y >= 0)
+        const moonOpacity = moonY >= 0 ? 1 : 0;
+        this.moon.setAttribute("opacity", moonOpacity);
       }
 
       // Fin de l'animation du coucher de soleil
@@ -497,9 +527,12 @@ AFRAME.registerComponent("day-night-cycle", {
 
       this.moon.setAttribute("position", `${moonX} ${moonY} ${moonZ}`);
 
-      // Opacité du soleil et de la lune (visible uniquement au-dessus de l'horizon)
-      const sunOpacity = sunY > 0 ? 1 : 0;
-      const moonOpacity = moonY > 0 ? 1 : 0;
+      // Opacité du soleil et de la lune (visibles au-dessus de l'horizon)
+      // Permettre aux deux astres d'être visibles en même temps
+      const sunOpacity =
+        sunY > -10 ? Math.max(0, Math.min(1, (sunY + 10) / 20)) : 0;
+      const moonOpacity =
+        moonY > -10 ? Math.max(0, Math.min(1, (moonY + 10) / 20)) : 0;
 
       this.sun.setAttribute("opacity", sunOpacity);
       this.moon.setAttribute("opacity", moonOpacity);
