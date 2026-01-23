@@ -25,10 +25,13 @@ AFRAME.registerComponent("sunset-trigger", {
     this.triggered = false; // Pour éviter les déclenchements multiples
 
     // Fonction pour déclencher le coucher de soleil
-    this.triggerSunset = () => {
+    this.triggerSunset = (evt) => {
       if (this.triggered) return; // Éviter les déclenchements multiples
 
-      console.log("✨ INTERACTION DÉCLENCHÉE - Clic sur la chaise détecté!");
+      console.log(
+        "✨ INTERACTION DÉCLENCHÉE - Événement:",
+        evt ? evt.type : "inconnu",
+      );
 
       // Trouver le composant day-night-cycle et démarrer l'animation
       const scene = this.el.sceneEl;
@@ -47,31 +50,19 @@ AFRAME.registerComponent("sunset-trigger", {
       }
     };
 
-    // Événement pour clic souris (desktop)
+    // Événement pour clic souris (desktop) et VR (propagé par thumbstick-logging)
     this.el.addEventListener("click", this.triggerSunset);
-
-    // Événements pour laser-controls (manettes VR pointant)
     this.el.addEventListener("mousedown", this.triggerSunset);
-    this.el.addEventListener("triggerdown", this.triggerSunset);
-
-    // Événements pour les manettes VR
-    this.el.addEventListener("gripdown", this.triggerSunset);
-    this.el.addEventListener("thumbstickdown", this.triggerSunset);
-
-    // Événements pour le toucher direct (main VR sans manette)
-    this.el.addEventListener("hit", this.triggerSunset);
-    this.el.addEventListener("collidestart", this.triggerSunset);
-    this.el.addEventListener("grab-start", this.triggerSunset);
 
     // Debug : afficher quand on pointe sur la chaise
-    this.el.addEventListener("mouseenter", (evt) => {
-      console.log("👁️ Pointeur VR/souris entre sur la chaise");
-    });
-
     this.el.addEventListener("raycaster-intersected", (evt) => {
       console.log(
-        "🎯 Raycaster détecte la chaise - appuyez sur la gâchette pour activer",
+        "🎯 Raycaster VR détecte la chaise - appuyez sur la gâchette",
       );
+    });
+
+    this.el.addEventListener("raycaster-intersected-cleared", () => {
+      console.log("❌ Raycaster ne pointe plus sur la chaise");
     });
   },
 });
@@ -80,6 +71,26 @@ AFRAME.registerComponent("sunset-trigger", {
 AFRAME.registerComponent("thumbstick-logging", {
   init: function () {
     this.el.addEventListener("thumbstickmoved", this.logThumbstick);
+
+    // Ajouter un listener pour triggerdown qui propage aux objets pointés
+    this.el.addEventListener("triggerdown", (evt) => {
+      console.log("🔫 Gâchette pressée sur", this.el.getAttribute("id"));
+
+      // Récupérer le raycaster de cette main
+      const raycaster = this.el.components.raycaster;
+      if (
+        raycaster &&
+        raycaster.intersectedEls &&
+        raycaster.intersectedEls.length > 0
+      ) {
+        // Propager l'événement click aux objets intersectés
+        raycaster.intersectedEls.forEach((el) => {
+          console.log("📡 Propagation du clic vers:", el);
+          el.emit("click", evt);
+          el.emit("mousedown", evt);
+        });
+      }
+    });
   },
   logThumbstick: function (evt) {
     if (evt.detail.y > 0.95) console.log("UP", evt.detail.y);
@@ -197,14 +208,19 @@ AFRAME.registerComponent("fox-behavior", {
 
   init: function () {
     this.rig = document.querySelector("#rig");
+    this.camera = null;
     this.lastPlayerPosition = new THREE.Vector3();
     this.playerIdleTimer = 0;
     this.isPlayerIdle = this.data.autoStart; // Commence en mode idle pour s'approcher tout de suite
     this.currentState = "idle";
 
-    if (this.rig) {
-      this.lastPlayerPosition.copy(this.rig.object3D.position);
-    }
+    // Attendre que la caméra soit prête
+    setTimeout(() => {
+      this.camera = this.el.sceneEl.camera;
+      if (this.rig) {
+        this.lastPlayerPosition.copy(this.rig.object3D.position);
+      }
+    }, 1000);
 
     console.log(
       "🦊 Comportement du renard initialisé (autoStart:",
@@ -213,13 +229,16 @@ AFRAME.registerComponent("fox-behavior", {
   },
 
   tick: function (time, delta) {
-    if (!this.rig) {
-      console.log("⚠️ Rig non trouvé");
+    if (!this.rig && !this.camera) {
       return;
     }
 
     const foxPosition = this.el.object3D.position;
-    const playerPosition = this.rig.object3D.position;
+    // Utiliser la position de la caméra (pour VR) ou du rig (pour desktop)
+    const playerPosition =
+      this.camera && this.camera.el
+        ? this.camera.el.object3D.getWorldPosition(new THREE.Vector3())
+        : this.rig.object3D.position;
 
     // Calculer la distance entre le joueur et le renard
     const dx = playerPosition.x - foxPosition.x;
