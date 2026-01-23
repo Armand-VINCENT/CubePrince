@@ -201,6 +201,7 @@ AFRAME.registerComponent("fox-behavior", {
     approachSpeed: { type: "number", default: 1.5 },
     retreatSpeed: { type: "number", default: 2.0 },
     minDistance: { type: "number", default: 2.5 },
+    minDistanceDesktop: { type: "number", default: 3.5 }, // Distance minimale pour desktop
     approachDistance: { type: "number", default: 10 },
     playerIdleTime: { type: "number", default: 500 },
     movementThreshold: { type: "number", default: 0.5 }, // Seuil de mouvement (unités)
@@ -214,12 +215,18 @@ AFRAME.registerComponent("fox-behavior", {
     this.playerIdleTimer = 0;
     this.isPlayerIdle = this.data.autoStart;
     this.currentState = "idle";
+    this.isVRMode = false; // Détection VR
 
     setTimeout(() => {
       this.camera = this.el.sceneEl.camera;
+      // Détecter si on est en VR
+      this.isVRMode = this.el.sceneEl.is("vr-mode");
+
       if (this.rig) {
         this.lastPlayerPosition.copy(this.rig.object3D.position);
       }
+
+      console.log("🦊 Mode détecté:", this.isVRMode ? "VR" : "Desktop");
     }, 1000);
 
     console.log(
@@ -232,6 +239,14 @@ AFRAME.registerComponent("fox-behavior", {
     if (!this.rig && !this.camera) {
       return;
     }
+
+    // Mettre à jour la détection VR à chaque frame
+    this.isVRMode = this.el.sceneEl.is("vr-mode");
+
+    // Utiliser la distance minimale appropriée selon le mode
+    const effectiveMinDistance = this.isVRMode
+      ? this.data.minDistance
+      : this.data.minDistanceDesktop;
 
     const foxPosition = this.el.object3D.position;
     const playerPosition =
@@ -283,13 +298,14 @@ AFRAME.registerComponent("fox-behavior", {
       foxPosition.z -= directionZ * retreatSpeed;
     } else if (
       this.isPlayerIdle &&
-      distance > this.data.minDistance &&
+      distance > effectiveMinDistance &&
       distance < this.data.approachDistance
     ) {
       if (this.currentState !== "approaching") {
         console.log(
           "🦊 Le renard s'approche (distance:",
-          distance.toFixed(2) + ")",
+          distance.toFixed(2) + ", min:",
+          effectiveMinDistance + ")",
         );
         this.currentState = "approaching";
       }
@@ -431,7 +447,7 @@ AFRAME.registerComponent("day-night-cycle", {
     const startOverlay = document.querySelector("#start-overlay");
     if (startOverlay) {
       startOverlay.addEventListener("click", () => {
-        console.log("🎵 Tentative de démarrage du son de vent...");
+        console.log("🎵 Tentative de démarrage des sons...");
 
         // Démarrer le son de vent
         const windSound = document.querySelector("#wind-sound");
@@ -445,6 +461,21 @@ AFRAME.registerComponent("day-night-cycle", {
         } else {
           console.warn(
             "⚠️ Élément son de vent non trouvé ou composant sound non initialisé",
+          );
+        }
+
+        // Démarrer la musique principale
+        const mainOst = document.querySelector("#main-ost");
+        if (mainOst && mainOst.components.sound) {
+          try {
+            mainOst.components.sound.playSound();
+            console.log("✅ Musique principale démarrée avec succès !");
+          } catch (error) {
+            console.error("❌ Erreur lors du démarrage de la musique:", error);
+          }
+        } else {
+          console.warn(
+            "⚠️ Élément musique principale non trouvé ou composant sound non initialisé",
           );
         }
 

@@ -67,6 +67,13 @@
           position="0 0 0"
         ></a-entity>
 
+        <!-- Musique principale -->
+        <a-entity
+          id="main-ost"
+          sound="src: ./MainOst.m4a; loop: true; autoplay: false; volume: 1.5"
+          position="0 0 0"
+        ></a-entity>
+
         <!-- Sol -->
         <a-entity
           gltf-model="./models/FieldBiomes.glb"
@@ -81,7 +88,7 @@
           position="2 1.329 -4.73465"
           rotation="0 0 0"
           scale=""
-          fox-behavior="approachSpeed: 2.0; retreatSpeed: 4.5; minDistance: 1.2; approachDistance: 10; playerIdleTime: 500; autoStart: true"
+          fox-behavior="approachSpeed: 2.0; retreatSpeed: 4.5; minDistance: 1.2; minDistanceDesktop: 3.5; approachDistance: 10; playerIdleTime: 500; autoStart: true"
         >
           <a-light
             type="point"
