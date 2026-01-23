@@ -22,8 +22,12 @@ AFRAME.registerComponent("sunset-trigger", {
   init: function () {
     console.log("🪑 Chaise initialisée et prête pour l'interaction");
 
+    this.triggered = false; // Pour éviter les déclenchements multiples
+
     // Fonction pour déclencher le coucher de soleil
     this.triggerSunset = () => {
+      if (this.triggered) return; // Éviter les déclenchements multiples
+
       console.log("✨ INTERACTION DÉCLENCHÉE - Clic sur la chaise détecté!");
 
       // Trouver le composant day-night-cycle et démarrer l'animation
@@ -37,6 +41,7 @@ AFRAME.registerComponent("sunset-trigger", {
       ) {
         console.log("🌅 Lancement de l'animation du coucher de soleil...");
         dayNightCycle.startSunsetAnimation();
+        this.triggered = true;
       } else {
         console.log("⚠️ Animation déjà en cours ou cycle déjà actif");
       }
@@ -45,22 +50,28 @@ AFRAME.registerComponent("sunset-trigger", {
     // Événement pour clic souris (desktop)
     this.el.addEventListener("click", this.triggerSunset);
 
-    // Événements pour les manettes VR
+    // Événements pour laser-controls (manettes VR pointant)
+    this.el.addEventListener("mousedown", this.triggerSunset);
     this.el.addEventListener("triggerdown", this.triggerSunset);
+
+    // Événements pour les manettes VR
     this.el.addEventListener("gripdown", this.triggerSunset);
+    this.el.addEventListener("thumbstickdown", this.triggerSunset);
 
     // Événements pour le toucher direct (main VR sans manette)
     this.el.addEventListener("hit", this.triggerSunset);
     this.el.addEventListener("collidestart", this.triggerSunset);
+    this.el.addEventListener("grab-start", this.triggerSunset);
 
-    // Événement mouseenter pour les contrôleurs laser VR
+    // Debug : afficher quand on pointe sur la chaise
     this.el.addEventListener("mouseenter", (evt) => {
-      console.log("👁️ Contrôleur VR pointe sur la chaise");
+      console.log("👁️ Pointeur VR/souris entre sur la chaise");
     });
 
-    // Événement pour les contrôleurs VR qui utilisent raycaster
-    this.el.addEventListener("raycaster-intersected", () => {
-      console.log("🎯 Raycaster VR détecte la chaise");
+    this.el.addEventListener("raycaster-intersected", (evt) => {
+      console.log(
+        "🎯 Raycaster détecte la chaise - appuyez sur la gâchette pour activer",
+      );
     });
   },
 });
@@ -99,6 +110,33 @@ AFRAME.registerComponent("vr-body", {
     camera.appendChild(rightLeg);
 
     console.log("✅ Corps VR ajouté");
+  },
+});
+
+// Composant pour enlever les sphères des mains VR
+AFRAME.registerComponent("vr-hand-fix", {
+  init: function () {
+    this.el.addEventListener("model-loaded", () => {
+      // Attendre un peu pour s'assurer que tout est chargé
+      setTimeout(() => {
+        this.removeSpheres();
+      }, 500);
+    });
+  },
+
+  removeSpheres: function () {
+    // Parcourir tous les enfants de l'entité main
+    this.el.object3D.traverse((node) => {
+      // Chercher et supprimer les spheres/meshes indésirables
+      if (
+        node.isMesh &&
+        node.geometry &&
+        node.geometry.type === "SphereGeometry"
+      ) {
+        console.log("🚫 Suppression d'une sphère de la main VR");
+        node.visible = false; // Cacher la sphère
+      }
+    });
   },
 });
 

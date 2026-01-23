@@ -16,6 +16,7 @@
           id="rig"
           boundary="minX: -2; maxX: 2; minZ: -14; maxZ: -10"
           keyboard-controls="speed: 0.05; enabled: true"
+          movement-controls="speed: 0.2; fly: false"
           position="0 1.6 -12"
         >
           <a-entity
@@ -40,14 +41,22 @@
 
           <!-- Mains VR -->
           <a-entity
+            id="leftHand"
             hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"
-            laser-controls
+            hand-tracking-controls="hand: left"
+            laser-controls="hand: left"
+            raycaster="objects: .clickable; far: 10"
             thumbstick-logging
+            vr-hand-fix
           ></a-entity>
           <a-entity
+            id="rightHand"
             hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc"
-            laser-controls
+            hand-tracking-controls="hand: right"
+            laser-controls="hand: right"
+            raycaster="objects: .clickable; far: 10"
             thumbstick-logging
+            vr-hand-fix
           ></a-entity>
         </a-entity>
 
