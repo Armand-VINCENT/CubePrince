@@ -22,7 +22,8 @@ AFRAME.registerComponent("sunset-trigger", {
   init: function () {
     console.log("🪑 Chaise initialisée et prête pour l'interaction");
 
-    this.el.addEventListener("click", () => {
+    // Fonction pour déclencher le coucher de soleil
+    this.triggerSunset = () => {
       console.log("✨ INTERACTION DÉCLENCHÉE - Clic sur la chaise détecté!");
 
       // Trouver le composant day-night-cycle et démarrer l'animation
@@ -39,6 +40,27 @@ AFRAME.registerComponent("sunset-trigger", {
       } else {
         console.log("⚠️ Animation déjà en cours ou cycle déjà actif");
       }
+    };
+
+    // Événement pour clic souris (desktop)
+    this.el.addEventListener("click", this.triggerSunset);
+
+    // Événements pour les manettes VR
+    this.el.addEventListener("triggerdown", this.triggerSunset);
+    this.el.addEventListener("gripdown", this.triggerSunset);
+
+    // Événements pour le toucher direct (main VR sans manette)
+    this.el.addEventListener("hit", this.triggerSunset);
+    this.el.addEventListener("collidestart", this.triggerSunset);
+
+    // Événement mouseenter pour les contrôleurs laser VR
+    this.el.addEventListener("mouseenter", (evt) => {
+      console.log("👁️ Contrôleur VR pointe sur la chaise");
+    });
+
+    // Événement pour les contrôleurs VR qui utilisent raycaster
+    this.el.addEventListener("raycaster-intersected", () => {
+      console.log("🎯 Raycaster VR détecte la chaise");
     });
   },
 });
