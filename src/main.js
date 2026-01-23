@@ -198,12 +198,13 @@ AFRAME.registerComponent("keyboard-controls", {
 // Composant pour le comportement du renard
 AFRAME.registerComponent("fox-behavior", {
   schema: {
-    approachSpeed: { type: "number", default: 1.5 }, // Vitesse d'approche augmentée
-    retreatSpeed: { type: "number", default: 2.0 }, // Vitesse de recul augmentée
-    minDistance: { type: "number", default: 2.5 }, // Distance minimale
-    approachDistance: { type: "number", default: 10 }, // Distance maximale augmentée
-    playerIdleTime: { type: "number", default: 500 }, // Temps d'immobilité réduit
-    autoStart: { type: "boolean", default: true }, // Démarrage automatique
+    approachSpeed: { type: "number", default: 1.5 },
+    retreatSpeed: { type: "number", default: 2.0 },
+    minDistance: { type: "number", default: 2.5 },
+    approachDistance: { type: "number", default: 10 },
+    playerIdleTime: { type: "number", default: 500 },
+    movementThreshold: { type: "number", default: 0.5 }, // Seuil de mouvement (unités)
+    autoStart: { type: "boolean", default: true },
   },
 
   init: function () {
@@ -211,10 +212,9 @@ AFRAME.registerComponent("fox-behavior", {
     this.camera = null;
     this.lastPlayerPosition = new THREE.Vector3();
     this.playerIdleTimer = 0;
-    this.isPlayerIdle = this.data.autoStart; // Commence en mode idle pour s'approcher tout de suite
+    this.isPlayerIdle = this.data.autoStart;
     this.currentState = "idle";
 
-    // Attendre que la caméra soit prête
     setTimeout(() => {
       this.camera = this.el.sceneEl.camera;
       if (this.rig) {
@@ -234,29 +234,27 @@ AFRAME.registerComponent("fox-behavior", {
     }
 
     const foxPosition = this.el.object3D.position;
-    // Utiliser la position de la caméra (pour VR) ou du rig (pour desktop)
     const playerPosition =
       this.camera && this.camera.el
         ? this.camera.el.object3D.getWorldPosition(new THREE.Vector3())
         : this.rig.object3D.position;
 
-    // Calculer la distance entre le joueur et le renard
     const dx = playerPosition.x - foxPosition.x;
     const dz = playerPosition.z - foxPosition.z;
     const distance = Math.sqrt(dx * dx + dz * dz);
 
-    // Vérifier si le joueur est immobile
-    const playerMoved =
-      Math.abs(playerPosition.x - this.lastPlayerPosition.x) > 0.001 ||
-      Math.abs(playerPosition.z - this.lastPlayerPosition.z) > 0.001;
+    // Vérifier si le joueur a vraiment bougé (seuil de mouvement)
+    const movementDistance = Math.sqrt(
+      Math.pow(playerPosition.x - this.lastPlayerPosition.x, 2) +
+        Math.pow(playerPosition.z - this.lastPlayerPosition.z, 2),
+    );
+
+    const playerMoved = movementDistance > this.data.movementThreshold;
 
     if (playerMoved) {
       this.playerIdleTimer = 0;
       this.isPlayerIdle = false;
-      // Mettre à jour la position de manière compatible avec Vector3
-      this.lastPlayerPosition.x = playerPosition.x;
-      this.lastPlayerPosition.y = playerPosition.y;
-      this.lastPlayerPosition.z = playerPosition.z;
+      this.lastPlayerPosition.copy(playerPosition);
     } else {
       this.playerIdleTimer += delta;
       if (this.playerIdleTimer > this.data.playerIdleTime) {
@@ -264,22 +262,17 @@ AFRAME.registerComponent("fox-behavior", {
       }
     }
 
-    // Calculer la direction vers le joueur
     const directionX = dx / distance;
     const directionZ = dz / distance;
 
-    // Orienter le renard pour toujours regarder le joueur
-    // Calculer l'angle en radians, avec offset de -280° pour le modèle
     const angle = Math.atan2(dx, dz);
-    const offset = (-280 * Math.PI) / 180; // -280° en radians
+    const offset = (-280 * Math.PI) / 180;
     this.el.object3D.rotation.y = angle + offset;
 
-    // Comportement du renard
     if (playerMoved && distance < this.data.approachDistance) {
-      // Le joueur bouge et est proche : le renard recule
       if (this.currentState !== "retreating") {
         console.log(
-          "🦊 Le renard recule car le joueur s'approche (distance:",
+          "🦊 Le renard recule (distance:",
           distance.toFixed(2) + ")",
         );
         this.currentState = "retreating";
@@ -293,10 +286,9 @@ AFRAME.registerComponent("fox-behavior", {
       distance > this.data.minDistance &&
       distance < this.data.approachDistance
     ) {
-      // Le joueur est immobile : le renard s'approche
       if (this.currentState !== "approaching") {
         console.log(
-          "🦊 Le renard s'approche car le joueur est immobile (distance:",
+          "🦊 Le renard s'approche (distance:",
           distance.toFixed(2) + ")",
         );
         this.currentState = "approaching";
@@ -306,7 +298,6 @@ AFRAME.registerComponent("fox-behavior", {
       foxPosition.x += directionX * approachSpeed;
       foxPosition.z += directionZ * approachSpeed;
     } else {
-      // Le renard est immobile
       if (this.currentState !== "idle") {
         console.log(
           "🦊 Le renard s'arrête (distance:",
