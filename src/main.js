@@ -253,7 +253,10 @@ AFRAME.registerComponent("fox-behavior", {
     if (playerMoved) {
       this.playerIdleTimer = 0;
       this.isPlayerIdle = false;
-      this.lastPlayerPosition.copy(playerPosition);
+      // Mettre à jour la position de manière compatible avec Vector3
+      this.lastPlayerPosition.x = playerPosition.x;
+      this.lastPlayerPosition.y = playerPosition.y;
+      this.lastPlayerPosition.z = playerPosition.z;
     } else {
       this.playerIdleTimer += delta;
       if (this.playerIdleTimer > this.data.playerIdleTime) {
