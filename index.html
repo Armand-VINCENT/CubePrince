@@ -15,7 +15,7 @@
         <a-entity
           id="rig"
           boundary="minX: -2; maxX: 2; minZ: -14; maxZ: -10"
-          movement-controls="speed: 0.2; fly: false; controls: gamepad"
+          keyboard-controls="speed: 0.05; enabled: true"
           position="0 1.6 -12"
         >
           <a-entity
@@ -72,8 +72,9 @@
         <a-entity
           gltf-model="./models/LittleFox.glb"
           position="2 1.329 -4.73465"
-          rotation="0 -90 0"
+          rotation="0 0 0"
           scale=""
+          fox-behavior="approachSpeed: 1.5; retreatSpeed: 4.5; minDistance: 2.5; approachDistance: 10; playerIdleTime: 500; autoStart: true"
         >
           <a-light
             type="point"
