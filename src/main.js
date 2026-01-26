@@ -43,6 +43,14 @@ AFRAME.registerComponent("sunset-trigger", {
         !dayNightCycle.cycleActive
       ) {
         console.log("🌅 Lancement de l'animation du coucher de soleil...");
+
+        // Jouer le son d'activation
+        const activationSound = document.querySelector("#activation-sound");
+        if (activationSound && activationSound.components.sound) {
+          activationSound.components.sound.playSound();
+          console.log("🔊 Son d'activation joué");
+        }
+
         dayNightCycle.startSunsetAnimation();
         this.triggered = true;
       } else {

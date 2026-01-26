@@ -27,7 +27,7 @@
           >
             <a-entity
               cursor="fuse: true; fuseTimeout: 500; rayOrigin: mouse"
-              raycaster="objects: .clickable"
+              raycaster="objects: .clickable; far: 50"
               cursor-debug
               position="0 0 -1"
               geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
@@ -44,7 +44,7 @@
             id="leftHand"
             hand-controls="hand: left; handModelStyle: lowPoly; color: #ffcccc"
             laser-controls="hand: left"
-            raycaster="objects: .clickable; far: 10; lineColor: red; lineOpacity: 0.5"
+            raycaster="objects: .clickable; far: 50; lineColor: red; lineOpacity: 0.5"
             thumbstick-logging
             vr-hand-fix
           ></a-entity>
@@ -52,7 +52,7 @@
             id="rightHand"
             hand-controls="hand: right; handModelStyle: lowPoly; color: #ffcccc"
             laser-controls="hand: right"
-            raycaster="objects: .clickable; far: 10; lineColor: red; lineOpacity: 0.5"
+            raycaster="objects: .clickable; far: 50; lineColor: red; lineOpacity: 0.5"
             thumbstick-logging
             vr-hand-fix
           ></a-entity>
@@ -71,6 +71,13 @@
         <a-entity
           id="main-ost"
           sound="src: ./MainOst.m4a; loop: true; autoplay: false; volume: 1.5"
+          position="0 0 0"
+        ></a-entity>
+
+        <!-- Son d'activation de la chaise -->
+        <a-entity
+          id="activation-sound"
+          sound="src: ./SFX_Activation.mp3; loop: false; autoplay: false; volume: 2"
           position="0 0 0"
         ></a-entity>
 
