@@ -76,11 +76,20 @@
 
         <!-- Sol -->
         <a-entity
-          gltf-model="./models/FieldBiomes.glb"
+          gltf-model="./models/FloatingFlowerField.glb"
           position="0 0 0"
           rotation="0 0 0"
           scale="0.75 0.75 0.75"
-        ></a-entity>
+        >
+          <!-- Lumière sous l'île pour la rendre visible d'en dessous -->
+          <a-light
+            type="point"
+            position="0 -5 0"
+            intensity="1.5"
+            distance="50"
+            color="#FFD700"
+          ></a-light>
+        </a-entity>
 
         <!-- Renard -->
         <a-entity
@@ -88,7 +97,7 @@
           position="2 1.329 -4.73465"
           rotation="0 0 0"
           scale=""
-          fox-behavior="approachSpeed: 2.0; retreatSpeed: 4.5; minDistance: 1.2; minDistanceDesktop: 3.5; approachDistance: 10; playerIdleTime: 500; autoStart: true"
+          fox-behavior="approachSpeed: 2.0; retreatSpeed: 8.0; minDistance: 1.2; minDistanceDesktop: 3.5; approachDistance: 10; playerIdleTime: 500; movementThreshold: 0.001; autoStart: true"
         >
           <a-light
             type="point"
@@ -280,7 +289,229 @@
           gltf-model="./models/Airplane.glb"
           scale="5 5 5"
           wall-flight="height: 16; speed: 3.5; offset: 9"
+          airplane-teleport
+          class="clickable"
         ></a-entity>
+
+        <!-- Grand plan en dessous de l'île -->
+        <a-plane
+          position="0 -25 0"
+          rotation="-90 0 0"
+          width="200"
+          height="200"
+          color="#228B22"
+          material="side: double"
+          shadow="receive: true"
+        ></a-plane>
+
+        <!-- Lumière pour le plan inférieur -->
+        <!-- <a-light
+          type="point"
+          position="0 -15 0"
+          intensity="0.8"
+          distance="120"
+          color="#FFFACD"
+        ></a-light> -->
+
+        <!-- Arbres sur le plan inférieur -->
+        <a-entity
+          gltf-model="./models/BigTree.glb"
+          position="-30 -22 -30"
+          scale="3 3 3"
+        ></a-entity>
+        <a-entity
+          gltf-model="./models/BigTree.glb"
+          position="40 -22 -25"
+          scale="3.5 3.5 3.5"
+        ></a-entity>
+        <a-entity
+          gltf-model="./models/BigTree.glb"
+          position="-50 -22 40"
+          scale="2.8 2.8 2.8"
+        ></a-entity>
+        <a-entity
+          gltf-model="./models/BigTree.glb"
+          position="35 -22 50"
+          scale="3.2 3.2 3.2"
+        ></a-entity>
+        <a-entity
+          gltf-model="./models/BigTree.glb"
+          position="-15 -22 -60"
+          scale="3 3 3"
+        ></a-entity>
+        <a-entity
+          gltf-model="./models/BigTree.glb"
+          position="55 -22 20"
+          scale="2.5 2.5 2.5"
+        ></a-entity>
+        <a-entity
+          gltf-model="./models/BigTree.glb"
+          position="-45 -22 -10"
+          scale="3.3 3.3 3.3"
+        ></a-entity>
+        <a-entity
+          gltf-model="./models/BigTree.glb"
+          position="20 -22 -45"
+          scale="2.9 2.9 2.9"
+        ></a-entity>
+
+        <!-- Fleurs violettes sur le plan inférieur -->
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="-10 -25 -15"
+          rotation="0 45 0"
+          scale="1.2 1.2 1.2"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="15 -25 20"
+          rotation="0 120 0"
+          scale="1.1 1.1 1.1"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="-25 -25 25"
+          rotation="0 200 0"
+          scale="1.0 1.0 1.0"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="30 -25 -10"
+          rotation="0 300 0"
+          scale="1.15 1.15 1.15"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="-35 -25 -35"
+          rotation="0 60 0"
+          scale="1.0 1.0 1.0"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="45 -25 35"
+          rotation="0 180 0"
+          scale="1.3 1.3 1.3"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="5 -25 -40"
+          rotation="0 90 0"
+          scale="1.1 1.1 1.1"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="-20 -25 50"
+          rotation="0 270 0"
+          scale="1.2 1.2 1.2"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="38 -25 -28"
+          rotation="0 150 0"
+          scale="1.0 1.0 1.0"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="-42 -25 15"
+          rotation="0 330 0"
+          scale="1.25 1.25 1.25"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="12 -25 42"
+          rotation="0 220 0"
+          scale="1.15 1.15 1.15"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
+        <a-entity
+          gltf-model="./models/PurpleFlower.glb"
+          position="-8 -25 -50"
+          rotation="0 75 0"
+          scale="1.1 1.1 1.1"
+        >
+          <a-light
+            type="point"
+            color="#a855f7"
+            intensity="0.6"
+            distance="4"
+          ></a-light>
+        </a-entity>
 
         <!-- Mur Est (droite) -->
         <!-- <a-plane

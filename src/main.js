@@ -100,6 +100,56 @@ AFRAME.registerComponent("thumbstick-logging", {
   },
 });
 
+// Composant pour gérer le clic sur l'avion et téléporter vers le plan inférieur
+AFRAME.registerComponent("airplane-teleport", {
+  init: function () {
+    console.log("✈️ Avion initialisé pour la téléportation");
+
+    this.teleported = false; // État pour savoir si on est déjà téléporté
+
+    // Fonction pour téléporter le joueur
+    this.teleportToPlane = (evt) => {
+      // Vérifier si l'animation de la chaise a été déclenchée
+      const chair = document.querySelector("[sunset-trigger]");
+      if (
+        chair &&
+        chair.components["sunset-trigger"] &&
+        !chair.components["sunset-trigger"].triggered
+      ) {
+        console.log("⚠️ Vous devez d'abord interagir avec la chaise !");
+        return;
+      }
+
+      const rig = document.querySelector("#rig");
+
+      if (!this.teleported) {
+        console.log("✈️ Téléportation vers le plan inférieur...");
+        // Téléporter le joueur en dessous de l'île
+        rig.setAttribute("position", "0 -23 0");
+        this.teleported = true;
+      } else {
+        console.log("✈️ Retour à l'île...");
+        // Retour à la position initiale
+        rig.setAttribute("position", "0 1.6 -12");
+        this.teleported = false;
+      }
+    };
+
+    // Événements pour clic souris et VR
+    this.el.addEventListener("click", this.teleportToPlane);
+    this.el.addEventListener("mousedown", this.teleportToPlane);
+
+    // Debug : afficher quand on pointe sur l'avion
+    this.el.addEventListener("raycaster-intersected", (evt) => {
+      console.log("🎯 Raycaster détecte l'avion - cliquez pour téléporter");
+    });
+
+    this.el.addEventListener("raycaster-intersected-cleared", () => {
+      console.log("❌ Raycaster ne pointe plus sur l'avion");
+    });
+  },
+});
+
 // Composant pour afficher un corps simple en VR
 AFRAME.registerComponent("vr-body", {
   init: function () {
