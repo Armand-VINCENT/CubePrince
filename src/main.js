@@ -158,6 +158,90 @@ AFRAME.registerComponent("airplane-teleport", {
   },
 });
 
+// Composant pour grimper à l'échelle avec animation
+AFRAME.registerComponent("ladder-climb", {
+  init: function () {
+    console.log("🪧 Échelle initialisée pour l'interaction");
+
+    this.climbing = false; // État pour éviter les clics multiples pendant l'animation
+
+    // Fonction pour grimper ou descendre l'échelle
+    this.climbLadder = (evt) => {
+      if (this.climbing) {
+        console.log("⚠️ Animation en cours, veuillez attendre...");
+        return;
+      }
+
+      const rig = document.querySelector("#rig");
+      const currentPos = rig.object3D.position;
+
+      // Déterminer si on monte ou on descend en fonction de la position Y actuelle
+      // Si Y > -12, on est en haut, donc on descend
+      // Si Y < -12, on est en bas, donc on monte
+      const shouldGoDown = currentPos.y > -12;
+
+      const startY = shouldGoDown ? 0 : -23;
+      const targetY = shouldGoDown ? -23 : 0;
+      const startZ = -22.53366; // Toujours sur l'échelle
+      const targetZ = -22.53366; // Rester sur l'échelle pendant l'animation
+      const duration = 5000; // 5 secondes pour l'animation (plus lent)
+
+      console.log(
+        shouldGoDown
+          ? "👇 Descente de l'échelle..."
+          : "👆 Montée de l'échelle...",
+      );
+
+      this.climbing = true;
+
+      // Désactiver les contrôles pendant l'animation
+      const keyboardControls = rig.components["keyboard-controls"];
+      const movementControls = rig.components["movement-controls"];
+      if (keyboardControls) keyboardControls.data.enabled = false;
+      if (movementControls) movementControls.data.enabled = false;
+
+      // Positionner immédiatement le joueur sur l'échelle
+      rig.setAttribute("position", `0 ${startY} ${startZ}`);
+
+      // Animation fluide de la position Y en restant collé à l'échelle (X=0, Z=-22.53366)
+      rig.setAttribute("animation", {
+        property: "position",
+        from: `0 ${startY} ${startZ}`,
+        to: `0 ${targetY} ${targetZ}`,
+        dur: duration,
+        easing: "linear",
+      });
+
+      // Réactiver l'interaction après l'animation
+      setTimeout(() => {
+        // Si on monte, téléporter à la position finale sur l'île
+        if (!shouldGoDown) {
+          rig.setAttribute("position", "0 1.6 -12");
+        }
+
+        this.climbing = false;
+        // Réactiver les contrôles
+        if (keyboardControls) keyboardControls.data.enabled = true;
+        if (movementControls) movementControls.data.enabled = true;
+        console.log("✅ Animation terminée");
+      }, duration);
+    };
+
+    // Événements pour clic souris et VR
+    this.el.addEventListener("click", this.climbLadder);
+    this.el.addEventListener("mousedown", this.climbLadder);
+
+    // Debug
+    this.el.addEventListener("raycaster-intersected", (evt) => {
+      console.log("🎯 Raycaster détecte l'échelle - cliquez pour grimper");
+    });
+
+    this.el.addEventListener("raycaster-intersected-cleared", () => {
+      console.log("❌ Raycaster ne pointe plus sur l'échelle");
+    });
+  },
+});
+
 // Composant pour afficher un corps simple en VR
 AFRAME.registerComponent("vr-body", {
   init: function () {

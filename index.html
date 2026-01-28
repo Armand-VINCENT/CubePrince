@@ -14,7 +14,6 @@
         <!-- Caméra avec contrôles de mouvement limités -->
         <a-entity
           id="rig"
-          boundary="minX: -2; maxX: 2; minZ: -14; maxZ: -10"
           keyboard-controls="speed: 0.05; enabled: true"
           movement-controls="speed: 0.2; fly: false"
           position="0 1.6 -12"
@@ -150,6 +149,278 @@
           rotation=""
           scale=""
         ></a-entity>
+
+        <!-- Groupe d'échelles -->
+        <a-entity id="ladder-group" ladder-climb class="clickable">
+          <!-- Zone de clic invisible pour l'échelle -->
+          <a-box
+            position="0 -12.4 -22.53366"
+            width="2"
+            height="25"
+            depth="1"
+            material="opacity: 0; transparent: true; side: double"
+            class="clickable"
+          ></a-box>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 0 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -0.689 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -1.378 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -2.067 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -2.756 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -3.445 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -4.134 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -4.823 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -5.512 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -6.201 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -6.890 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -7.579 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -8.268 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -8.957 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -9.646 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -10.335 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -11.024 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -11.713 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -12.402 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -13.091 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -13.780 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -14.469 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -15.158 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -15.847 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -16.536 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -17.225 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -17.914 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -18.603 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -19.292 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -19.981 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -20.670 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -21.359 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -22.048 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -22.737 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -23.426 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -24.115 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+
+          <a-entity
+            gltf-model="./models/Ladder.glb"
+            position="0 -24.804 -22.53366"
+            rotation="0 90 0"
+            scale=""
+          ></a-entity>
+        </a-entity>
 
         <!-- Fleurs violettes éparpillées sur le sol -->
         <a-entity
